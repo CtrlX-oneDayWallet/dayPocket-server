@@ -15,6 +15,9 @@ public class Member {
     private String phoneNumber;
     private Long fiScore;
     private Integer fiPoint;
+    private Long asset;
+    private Integer targetReceiptfiPoint;
+    private Integer receiptfiPoint;
 
     @OneToMany(mappedBy = "member")
     private List<MemberChallenge> memberChallenges = new ArrayList<>();
