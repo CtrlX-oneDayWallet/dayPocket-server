@@ -2,6 +2,7 @@ package hyu.dayPocket.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,9 @@ public class Member {
     private Integer targetReceiptfiPoint;
 
     private Integer receiptfiPoint;
+
+    @Setter
+    private String refreshToken;
 
     @OneToMany(mappedBy = "member")
     private List<MemberChallenge> memberChallenges = new ArrayList<>();
