@@ -2,12 +2,11 @@ package hyu.dayPocket.service;
 
 import hyu.dayPocket.domain.Member;
 import hyu.dayPocket.exceptions.AuthenticationException;
-import hyu.dayPocket.exceptions.MemberException;
+import hyu.dayPocket.exceptions.MemberNotFoundException;
 import hyu.dayPocket.repository.MemberRepository;
 import hyu.dayPocket.utils.JwtTokenUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,12 +30,12 @@ public class MemberService {
 
     public Member getMemberById(Long id) {
         return memberRepository.findById(id).orElseThrow(
-                () -> new MemberException("Cannot find member with id" + id));
+                () -> new MemberNotFoundException("Cannot find member with id" + id));
     }
 
     public Member getMemberByPhoneNumber(String phoneNumber) {
         return memberRepository.findByPhoneNumber(phoneNumber).orElseThrow(
-                () -> new MemberException("Cannot find member with phone number" + phoneNumber)
+                () -> new MemberNotFoundException("Cannot find member with phone number" + phoneNumber)
         );
     }
 

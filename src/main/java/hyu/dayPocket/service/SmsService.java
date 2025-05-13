@@ -1,6 +1,6 @@
 package hyu.dayPocket.service;
 
-import hyu.dayPocket.exceptions.SmsException;
+import hyu.dayPocket.exceptions.SendingSmsFailException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -69,7 +69,7 @@ public class SmsService {
 
     private void validateSmsRequest(ResponseEntity<String> response) {
         if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new SmsException("요청이 올바르지 않았습니다");
+            throw new SendingSmsFailException("요청이 올바르지 않았습니다");
         }
     }
 }
