@@ -40,6 +40,7 @@ public class MemberService {
         );
     }
 
+    @Transactional
     public void doLogin(String phoneNumber, String password, HttpServletResponse response) {
         Member member = getMemberByPhoneNumber(phoneNumber);
         if (member.getPassword().equals(password)) {
@@ -52,6 +53,17 @@ public class MemberService {
         } else {
             throw new AuthenticationException("Wrong password");
         }
+    }
+
+    @Transactional
+    public Member signUp(String name,String phoneNumber, String password) {
+        return memberRepository.save(
+                Member.builder()
+                        .name(name)
+                        .phoneNumber(phoneNumber)
+                        .password(password)
+                        .build()
+        );
     }
 
     private void setRefreshToken(String refreshToken, HttpServletResponse response) {
