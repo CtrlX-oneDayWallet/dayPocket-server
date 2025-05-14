@@ -25,7 +25,8 @@ public class MemberService {
     private final JwtTokenUtils jwtTokenUtils;
     private final Integer maxAge;
     private final DateService dateService;
-    public MemberService (
+
+    public MemberService(
             MemberRepository memberRepository,
             JwtTokenUtils jwtTokenUtils,
             @Value("${jwt.refresh-token-expire-time}") Integer maxAge,
@@ -34,7 +35,7 @@ public class MemberService {
         this.memberRepository = memberRepository;
         this.jwtTokenUtils = jwtTokenUtils;
         this.maxAge = maxAge;
-        this.dateService =dateService;
+        this.dateService = dateService;
     }
 
     public DayMaxFiScoreDto getDayMaxFiScoreDto(){
@@ -55,7 +56,7 @@ public class MemberService {
         return monthMaxFiPointDto;
     }
 
-    public HomeDto getHomeDto(Member member){
+    public HomeDto getHomeDto(Member member) {
         int month = dateService.getLocalDate().getMonthValue();
         int day = dateService.getLocalDate().getDayOfMonth();
         Long fiScore = member.getFiScore();
@@ -70,8 +71,8 @@ public class MemberService {
 
     public AssetDto getAssetDto(Member member) {
         Long asset = member.getAsset();
-        Integer targetReceiptFiPoint = member.getTargetReceiptFiPoint();
-        Integer receiptFiPoint = member.getReceiptFiPoint();
+        Integer targetReceiptFiPoint = member.getTargetReceiptfiPoint();
+        Integer receiptFiPoint = member.getReceiptfiPoint();
         Double processPoint  = ((double) receiptFiPoint / (double) targetReceiptFiPoint  * 100);
         Integer leftPoint = targetReceiptFiPoint - receiptFiPoint;
         Integer fiPoint = member.getFiPoint();
