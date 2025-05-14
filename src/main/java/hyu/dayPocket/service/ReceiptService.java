@@ -13,8 +13,8 @@ public class ReceiptService {
     public final MemberRepository memberRepository;
 
     public void setTargetReceiptFiPoint(Member member, Integer targetReceiptFiPoint) {
-        TargetReceiptFiPointDto targetReceiptFiPointDto = TargetReceiptFiPointDto.targetReceiptFiPointFrom(targetReceiptFiPoint);
-        member.updateTargetReceiptFiPoint(targetReceiptFiPoint);
+        TargetReceiptFiPointDto dto = TargetReceiptFiPointDto.targetReceiptFiPointFrom(targetReceiptFiPoint);
+        member.updateTargetReceiptFiPoint(dto.getTargetReceiptFiPoint());
     }
 
 

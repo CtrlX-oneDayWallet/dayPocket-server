@@ -1,5 +1,6 @@
 package hyu.dayPocket.controller;
 
+import hyu.dayPocket.config.CustomUserDetails;
 import hyu.dayPocket.domain.Member;
 import hyu.dayPocket.dto.TargetReceiptFiPointDto;
 import hyu.dayPocket.service.ReceiptService;
