@@ -1,44 +1,25 @@
 package hyu.dayPocket.repository;
 
 import hyu.dayPocket.domain.Member;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-@RequiredArgsConstructor
-public class MemberRepository {
 
-    @PersistenceContext
-    public final EntityManager em;
+public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    public void save(Member member){
-        em.persist(member);
-    }
+    List<Member> findDayMaxFiScore();
 
-    public List<Member> findDayMaxFiScore(){
-        return em.createQuery("select m from Member m order by m.fiScore desc", Member.class).getResultList();
-    }
+    List<Member> findMonthMaxFiPoint();
 
-    public List<Member> findMonthMaxFiPoint(){
-        return em.createQuery("select m from Member m order by m.fiPoint desc", Member.class).getResultList();
-    }
+    @Query("select avg(m.fiScore) from Member m")
+    Double findDayAvgFiScore();
 
-    public Long findDayAvgFiScore(){
-        return  em.createQuery("select avg(m.fiScore) from Member  m", Long.class ).getSingleResult();
-    }
-
-    public Integer findMonthAvgFiPoint(){
-        return  em.createQuery("select avg(m.fiPoint) from Member  m", Integer.class ).getSingleResult();
-    }
+    @Query("select avg(m.fiPoint) from Member m")
+    Double findMonthAvgFiPoint();
 
 
-
-
-
-    //todo fiScore, fiPoint 초기화하는 쿼리 필요 @Scheduled 사용
 }

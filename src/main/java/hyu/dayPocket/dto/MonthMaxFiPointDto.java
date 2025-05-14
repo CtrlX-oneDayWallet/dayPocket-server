@@ -7,11 +7,11 @@ import lombok.Data;
 @AllArgsConstructor
 public class MonthMaxFiPointDto {
 
-    private Integer monthAvgFiPoint;
+    private Double monthAvgFiPoint;
     private String maxFiPointName;
     private Integer maxFiPoint;
 
-    public static MonthMaxFiPointDto maxFiPointFrom(Integer monthAvgFiPoint, String maxFiPointName, Integer maxFiPoint) {
+    public static MonthMaxFiPointDto maxFiPointFrom(Double monthAvgFiPoint, String maxFiPointName, Integer maxFiPoint) {
         return new MonthMaxFiPointDto(monthAvgFiPoint, maxFiPointName, maxFiPoint);
     }
 }

@@ -20,7 +20,7 @@ public class MemberService {
 
     public DayMaxFiScoreDto getDayMaxFiScoreDto(){
         List<Member> dayMaxFiScore = memberRepository.findDayMaxFiScore();
-        Long dayAvgFiScore = memberRepository.findDayAvgFiScore();
+        Double dayAvgFiScore = memberRepository.findDayAvgFiScore();
         String maxFiScoreName = dayMaxFiScore.get(0).getName();
         Long maxFiScore = dayMaxFiScore.get(0).getFiScore();
         DayMaxFiScoreDto dayMaxFiScoreDto = DayMaxFiScoreDto.maxFiScoreFrom(dayAvgFiScore, maxFiScoreName, maxFiScore);
@@ -29,7 +29,7 @@ public class MemberService {
 
     public MonthMaxFiPointDto getMonthMaxFiPointDto(){
         List<Member> monthMaxFiPoint = memberRepository.findMonthMaxFiPoint();
-        Integer monthAvgFiPoint = memberRepository.findMonthAvgFiPoint();
+        Double monthAvgFiPoint = memberRepository.findMonthAvgFiPoint();
         String maxFiPointName = monthMaxFiPoint.get(0).getName();
         Integer maxFiPoint = monthMaxFiPoint.get(0).getFiPoint();
         MonthMaxFiPointDto monthMaxFiPointDto = MonthMaxFiPointDto.maxFiPointFrom(monthAvgFiPoint, maxFiPointName, maxFiPoint);

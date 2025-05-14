@@ -9,9 +9,9 @@ public class DayMaxFiScoreDto {
 
     private Long dayMaxFiScore;
     private String dayMaxFiScoreName;
-    private Long dayAvgFiScore;
+    private Double dayAvgFiScore;
 
-    public static DayMaxFiScoreDto maxFiScoreFrom(Long dayMaxFiScore, String dayMaxFiScoreName, Long dayAvgFiScore) {
+    public static DayMaxFiScoreDto maxFiScoreFrom(Double dayMaxFiScore, String dayMaxFiScoreName, Long dayAvgFiScore) {
         return new DayMaxFiScoreDto(dayAvgFiScore, dayMaxFiScoreName, dayMaxFiScore);
     }
 }
