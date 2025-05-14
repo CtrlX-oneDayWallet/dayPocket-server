@@ -10,7 +10,7 @@ public class Payback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long paybackId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 

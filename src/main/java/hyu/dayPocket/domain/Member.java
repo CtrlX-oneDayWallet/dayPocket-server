@@ -41,4 +41,7 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private List<Payback> payBacks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "owner")
+    private List<BankAccount> bankAccounts = new ArrayList<>();
 }
