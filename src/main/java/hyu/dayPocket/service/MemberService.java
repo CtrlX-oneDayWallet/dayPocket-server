@@ -24,18 +24,15 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final JwtTokenUtils jwtTokenUtils;
     private final Integer maxAge;
-    private final DateService dateService;
 
     public MemberService(
             MemberRepository memberRepository,
             JwtTokenUtils jwtTokenUtils,
-            @Value("${jwt.refresh-token-expire-time}") Integer maxAge,
-            DateService dateService
+            @Value("${jwt.refresh-token-expire-time}") Integer maxAge
     ) {
         this.memberRepository = memberRepository;
         this.jwtTokenUtils = jwtTokenUtils;
         this.maxAge = maxAge;
-        this.dateService = dateService;
     }
 
     public DayMaxFiScoreDto getDayMaxFiScoreDto(){
@@ -57,14 +54,12 @@ public class MemberService {
     }
 
     public HomeDto getHomeDto(Member member) {
-        int month = dateService.getLocalDate().getMonthValue();
-        int day = dateService.getLocalDate().getDayOfMonth();
         Long fiScore = member.getFiScore();
         Integer fiPoint = member.getFiPoint();
         DayMaxFiScoreDto dayMaxFiScoreDto = getDayMaxFiScoreDto();
         MonthMaxFiPointDto monthMaxFiPointDto = getMonthMaxFiPointDto();
 
-        HomeDto homeDto = HomeDto.mainFrom(month, day, fiScore, fiPoint, dayMaxFiScoreDto, monthMaxFiPointDto);
+        HomeDto homeDto = HomeDto.mainFrom(fiScore, fiPoint, dayMaxFiScoreDto, monthMaxFiPointDto);
         return homeDto;
     }
 

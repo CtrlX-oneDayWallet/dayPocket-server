@@ -21,7 +21,7 @@ public class MainController {
 
     public final MemberService memberService;
 
-    @GetMapping("dayPocket/main/home")
+    @GetMapping("/dayPocket/main/home")
     public ResponseEntity<HomeDto> getHome(@AuthenticationPrincipal CustomUserDetails userDetails ) {
         Member member = userDetails.getMember();
         HomeDto homeDto = memberService.getHomeDto(member);
