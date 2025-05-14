@@ -44,4 +44,8 @@ public class Member {
 
     @OneToMany(mappedBy = "owner")
     private List<BankAccount> bankAccounts = new ArrayList<>();
+
+    public void usePoint(Integer usedPoint) {
+        this.fiPoint -= usedPoint;
+    }
 }
