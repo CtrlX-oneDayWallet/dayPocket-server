@@ -1,26 +1,40 @@
 package hyu.dayPocket.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
+
     private String password;
+
+    @Column(unique = true)
     private String phoneNumber;
+
     private Long fiScore;
+
     private Integer fiPoint;
+
     private Long asset;
-    private Integer targetReceiptFiPoint;
-    private Integer receiptFiPoint;
+
+    private Integer targetReceiptfiPoint;
+
+    private Integer receiptfiPoint;
+
+    @Setter
+    private String refreshToken;
 
     @OneToMany(mappedBy = "member")
     private List<MemberChallenge> memberChallenges = new ArrayList<>();
@@ -29,6 +43,6 @@ public class Member {
     private List<Payback> payBacks = new ArrayList<>();
 
     public void updateTargetReceiptFiPoint(Integer targetReceiptFiPoint ){
-        this.targetReceiptFiPoint = targetReceiptFiPoint;
+        this.targetReceiptfiPoint = targetReceiptFiPoint;
     }
 }
