@@ -19,7 +19,7 @@ public class PointController {
     public String withdraw(@RequestBody PointWithdrawData pointWithdrawData, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Member member = userDetails.getMember();
 
-        bankAccountService.withdraw(member, pointWithdrawData.getPoint(), pointWithdrawData.getAccountNumber());
+        bankAccountService.withdraw(member, pointWithdrawData.getPoint());
         return "Point Withdrawal success!";
     }
 }
