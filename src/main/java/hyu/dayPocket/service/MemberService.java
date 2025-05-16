@@ -12,9 +12,12 @@ import hyu.dayPocket.utils.JwtTokenUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @Service
@@ -35,8 +38,10 @@ public class MemberService {
     }
 
     public DayMaxFiScoreDto getDayMaxFiScoreDto(){
-        List<Member> dayMaxFiScore = memberRepository.findDayMaxFiScoreMember();
-        Double dayAvgFiScore = memberRepository.findDayAvgFiScore();
+        LocalDate today = LocalDate.now();
+        PageRequest one = PageRequest.of(0, 1);
+        List<Member> dayMaxFiScore = memberRepository.findDayMaxFiScoreMember(today, one);
+        Double dayAvgFiScore = getDayAvgFiScore(today);
         String maxFiScoreName = dayMaxFiScore.get(0).getName();
         Long maxFiScore = dayMaxFiScore.get(0).getFiScore();
         DayMaxFiScoreDto dayMaxFiScoreDto = DayMaxFiScoreDto.maxFiScoreFrom(dayAvgFiScore, maxFiScoreName, maxFiScore);
@@ -44,8 +49,13 @@ public class MemberService {
     }
 
     public MonthMaxFiPointDto getMonthMaxFiPointDto(){
-        List<Member> monthMaxFiPoint = memberRepository.findMonthMaxFiPointMember();
-        Double monthAvgFiPoint = memberRepository.findMonthAvgFiPoint();
+        LocalDate now = LocalDate.now();
+        YearMonth currentMonth = YearMonth.from(now);
+        LocalDate startOfMonth = currentMonth.atDay(1);
+        LocalDate endOfMonth = currentMonth.atEndOfMonth();
+        PageRequest one = PageRequest.of(0, 1);
+        List<Member> monthMaxFiPoint = memberRepository.findMonthMaxFiPointMember(startOfMonth, endOfMonth, one);
+        Double monthAvgFiPoint = getMonthAvgFiPoint(startOfMonth, endOfMonth);
         String maxFiPointName = monthMaxFiPoint.get(0).getName();
         Integer maxFiPoint = monthMaxFiPoint.get(0).getFiPoint();
         MonthMaxFiPointDto monthMaxFiPointDto = MonthMaxFiPointDto.maxFiPointFrom(monthAvgFiPoint, maxFiPointName, maxFiPoint);
@@ -119,6 +129,31 @@ public class MemberService {
         cookie.setMaxAge(maxAge);
 
         response.addCookie(cookie);
+    }
+
+    public double getDayAvgFiScore(LocalDate today){
+        List<Object[]> result = memberRepository.findDayFiPointGroupByMember(today);
+        if (result.isEmpty()) return 0.0;
+
+        int totalSum = 0;
+        for(Object[] member : result ){
+            Long sum = (Long) member[1];
+            totalSum += sum;
+        }
+        return (double) totalSum/ result.size();
+    }
+
+    public double getMonthAvgFiPoint(LocalDate startOfMonth, LocalDate endOfMonth){
+        List<Object[]> result = memberRepository.findMonthFiScoreGroupByMember(startOfMonth, endOfMonth);
+
+        if (result.isEmpty()) return 0.0;
+
+        int totalSum = 0;
+        for(Object[] member : result ){
+            Long sum = (Long) member[1];
+            totalSum += sum;
+        }
+        return (double) totalSum/ result.size();
     }
 
 
