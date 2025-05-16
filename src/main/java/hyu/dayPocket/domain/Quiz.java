@@ -17,7 +17,5 @@ public class Quiz {
     @ManyToOne
     @JoinColumn(name = "memberChallenge_id")
     private MemberChallenge memberChallenge;
-
-
 }
 
