@@ -16,7 +16,7 @@ public class Receipt {
 
     private LocalDateTime spentTime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberChallenge_id")
     private MemberChallenge memberChallenge;
 
