@@ -12,7 +12,6 @@ import hyu.dayPocket.utils.JwtTokenUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +35,7 @@ public class MemberService {
     }
 
     public DayMaxFiScoreDto getDayMaxFiScoreDto(){
-        List<Member> dayMaxFiScore = memberRepository.findDayMaxFiScore();
+        List<Member> dayMaxFiScore = memberRepository.findDayMaxFiScoreMember();
         Double dayAvgFiScore = memberRepository.findDayAvgFiScore();
         String maxFiScoreName = dayMaxFiScore.get(0).getName();
         Long maxFiScore = dayMaxFiScore.get(0).getFiScore();
@@ -45,7 +44,7 @@ public class MemberService {
     }
 
     public MonthMaxFiPointDto getMonthMaxFiPointDto(){
-        List<Member> monthMaxFiPoint = memberRepository.findMonthMaxFiPoint();
+        List<Member> monthMaxFiPoint = memberRepository.findMonthMaxFiPointMember();
         Double monthAvgFiPoint = memberRepository.findMonthAvgFiPoint();
         String maxFiPointName = monthMaxFiPoint.get(0).getName();
         Integer maxFiPoint = monthMaxFiPoint.get(0).getFiPoint();

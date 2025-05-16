@@ -11,16 +11,17 @@ import java.util.Optional;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    List<Member> findDayMaxFiScore();
+    @Query("select m from Member m order by m.fiScore desc")
+    List<Member> findDayMaxFiScoreMember();
 
-    List<Member> findMonthMaxFiPoint();
+    @Query("select m from Member m order by m.fiPoint desc")
+    List<Member> findMonthMaxFiPointMember();
 
     @Query("select avg(m.fiScore) from Member m")
     Double findDayAvgFiScore();
 
     @Query("select avg(m.fiPoint) from Member m")
     Double findMonthAvgFiPoint();
-
 
     Optional<Member> findByPhoneNumber(String phoneNumber);
 }
