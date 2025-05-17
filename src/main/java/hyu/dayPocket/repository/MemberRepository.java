@@ -26,5 +26,16 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("select f.member.id, sum(f.fiPoint)  from FiPointHistory f where  f.date between :startDate and :endDate GROUP BY f.member.id")
     List<Object[]> findMonthFiScoreGroupByMember(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
+    @Query("select sum(f.fiScore) from FiScoreHistory f where f.date = :today and f.member = :member")
+    Long sumTodayFiScoreByMember(@Param("today") LocalDate today, @Param("member") Member member);
+
+    @Query("select sum(f.fiPoint) from FiPointHistory f where f.date between :startDate and :endDate and f.member = :member")
+    Integer sumTodayFiPointByMember(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, @Param("member") Member member);
+
+    @Query("select sum(f.fiPoint) from FiPointHistory f where f.member = :member")
+    Long sumFiPointByMember(@Param("member") Member member);
+
+
+
     Optional<Member> findByPhoneNumber(String phoneNumber);
 }

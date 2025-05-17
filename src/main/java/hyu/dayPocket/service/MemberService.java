@@ -63,8 +63,12 @@ public class MemberService {
     }
 
     public HomeDto getHomeDto(Member member) {
-        Long fiScore = member.getFiScore();
-        Integer fiPoint = member.getFiPoint();
+        LocalDate now = LocalDate.now();
+        YearMonth currentMonth = YearMonth.from(now);
+        LocalDate startOfMonth = currentMonth.atDay(1);
+        LocalDate endOfMonth = currentMonth.atEndOfMonth();
+        Long fiScore = memberRepository.sumTodayFiScoreByMember(now, member );
+        Integer fiPoint = memberRepository.sumTodayFiPointByMember(startOfMonth, endOfMonth, member);
         DayMaxFiScoreDto dayMaxFiScoreDto = getDayMaxFiScoreDto();
         MonthMaxFiPointDto monthMaxFiPointDto = getMonthMaxFiPointDto();
 
@@ -74,12 +78,16 @@ public class MemberService {
 
 
     public AssetDto getAssetDto(Member member) {
-        Long asset = member.getAsset();
+        LocalDate now = LocalDate.now();
+        YearMonth currentMonth = YearMonth.from(now);
+        LocalDate startOfMonth = currentMonth.atDay(1);
+        LocalDate endOfMonth = currentMonth.atEndOfMonth();
+        Long asset = memberRepository.sumFiPointByMember(member);
         Integer targetReceiptFiPoint = member.getTargetReceiptfiPoint();
         Integer receiptFiPoint = member.getReceiptfiPoint();
         Double processPoint  = ((double) receiptFiPoint / (double) targetReceiptFiPoint  * 100);
         Integer leftPoint = targetReceiptFiPoint - receiptFiPoint;
-        Integer fiPoint = member.getFiPoint();
+        Integer fiPoint = memberRepository.sumTodayFiPointByMember(startOfMonth, endOfMonth, member);
         AssetDto assetDto = AssetDto.assetFrom(asset, targetReceiptFiPoint, receiptFiPoint, processPoint, leftPoint, fiPoint);
         return assetDto;
     }
