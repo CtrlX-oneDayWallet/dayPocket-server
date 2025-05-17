@@ -1,6 +1,10 @@
 package hyu.dayPocket.service;
 
 import hyu.dayPocket.domain.Member;
+import hyu.dayPocket.dto.AssetDto;
+import hyu.dayPocket.dto.DayMaxFiScoreDto;
+import hyu.dayPocket.dto.MonthMaxFiPointDto;
+import hyu.dayPocket.dto.HomeDto;
 import hyu.dayPocket.exceptions.AuthenticationException;
 import hyu.dayPocket.exceptions.MemberNotFoundException;
 import hyu.dayPocket.repository.MemberRepository;
@@ -8,8 +12,13 @@ import hyu.dayPocket.utils.JwtTokenUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.List;
 
 @Service
 @Transactional(readOnly=true)
@@ -18,7 +27,7 @@ public class MemberService {
     private final JwtTokenUtils jwtTokenUtils;
     private final Integer maxAge;
 
-    public MemberService (
+    public MemberService(
             MemberRepository memberRepository,
             JwtTokenUtils jwtTokenUtils,
             @Value("${jwt.refresh-token-expire-time}") Integer maxAge
@@ -26,6 +35,61 @@ public class MemberService {
         this.memberRepository = memberRepository;
         this.jwtTokenUtils = jwtTokenUtils;
         this.maxAge = maxAge;
+    }
+
+    public DayMaxFiScoreDto getDayMaxFiScoreDto(){
+        LocalDate today = LocalDate.now();
+        PageRequest one = PageRequest.of(0, 1);
+        List<Member> dayMaxFiScore = memberRepository.findDayMaxFiScoreMember(today, one);
+        Double dayAvgFiScore = getDayAvgFiScore(today);
+        String maxFiScoreName = dayMaxFiScore.get(0).getName();
+        Long maxFiScore = dayMaxFiScore.get(0).getFiScore();
+        DayMaxFiScoreDto dayMaxFiScoreDto = DayMaxFiScoreDto.maxFiScoreFrom(dayAvgFiScore, maxFiScoreName, maxFiScore);
+        return dayMaxFiScoreDto;
+    }
+
+    public MonthMaxFiPointDto getMonthMaxFiPointDto(){
+        LocalDate now = LocalDate.now();
+        YearMonth currentMonth = YearMonth.from(now);
+        LocalDate startOfMonth = currentMonth.atDay(1);
+        LocalDate endOfMonth = currentMonth.atEndOfMonth();
+        PageRequest one = PageRequest.of(0, 1);
+        List<Member> monthMaxFiPoint = memberRepository.findMonthMaxFiPointMember(startOfMonth, endOfMonth, one);
+        Double monthAvgFiPoint = getMonthAvgFiPoint(startOfMonth, endOfMonth);
+        String maxFiPointName = monthMaxFiPoint.get(0).getName();
+        Integer maxFiPoint = monthMaxFiPoint.get(0).getFiPoint();
+        MonthMaxFiPointDto monthMaxFiPointDto = MonthMaxFiPointDto.maxFiPointFrom(monthAvgFiPoint, maxFiPointName, maxFiPoint);
+        return monthMaxFiPointDto;
+    }
+
+    public HomeDto getHomeDto(Member member) {
+        LocalDate now = LocalDate.now();
+        YearMonth currentMonth = YearMonth.from(now);
+        LocalDate startOfMonth = currentMonth.atDay(1);
+        LocalDate endOfMonth = currentMonth.atEndOfMonth();
+        Long fiScore = memberRepository.sumTodayFiScoreByMember(now, member );
+        Integer fiPoint = memberRepository.sumTodayFiPointByMember(startOfMonth, endOfMonth, member);
+        DayMaxFiScoreDto dayMaxFiScoreDto = getDayMaxFiScoreDto();
+        MonthMaxFiPointDto monthMaxFiPointDto = getMonthMaxFiPointDto();
+
+        HomeDto homeDto = HomeDto.mainFrom(fiScore, fiPoint, dayMaxFiScoreDto, monthMaxFiPointDto);
+        return homeDto;
+    }
+
+
+    public AssetDto getAssetDto(Member member) {
+        LocalDate now = LocalDate.now();
+        YearMonth currentMonth = YearMonth.from(now);
+        LocalDate startOfMonth = currentMonth.atDay(1);
+        LocalDate endOfMonth = currentMonth.atEndOfMonth();
+        Long asset = memberRepository.sumFiPointByMember(member);
+        Integer targetReceiptFiPoint = member.getTargetReceiptfiPoint();
+        Integer receiptFiPoint = member.getReceiptfiPoint();
+        Double processPoint  = ((double) receiptFiPoint / (double) targetReceiptFiPoint  * 100);
+        Integer leftPoint = targetReceiptFiPoint - receiptFiPoint;
+        Integer fiPoint = memberRepository.sumTodayFiPointByMember(startOfMonth, endOfMonth, member);
+        AssetDto assetDto = AssetDto.assetFrom(asset, targetReceiptFiPoint, receiptFiPoint, processPoint, leftPoint, fiPoint);
+        return assetDto;
     }
 
     public Member getMemberById(Long id) {
@@ -74,4 +138,35 @@ public class MemberService {
 
         response.addCookie(cookie);
     }
+
+    public double getDayAvgFiScore(LocalDate today){
+        List<Object[]> result = memberRepository.findDayFiPointGroupByMember(today);
+        if (result.isEmpty()) return 0.0;
+
+        int totalSum = 0;
+        for(Object[] member : result ){
+            Long sum = (Long) member[1];
+            totalSum += sum;
+        }
+        return (double) totalSum/ result.size();
+    }
+
+    public double getMonthAvgFiPoint(LocalDate startOfMonth, LocalDate endOfMonth){
+        List<Object[]> result = memberRepository.findMonthFiScoreGroupByMember(startOfMonth, endOfMonth);
+
+        if (result.isEmpty()) return 0.0;
+
+        int totalSum = 0;
+        for(Object[] member : result ){
+            Long sum = (Long) member[1];
+            totalSum += sum;
+        }
+        return (double) totalSum/ result.size();
+    }
+
+
+
+
+
+
 }

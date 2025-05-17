@@ -37,8 +37,18 @@ public class Member {
     private String refreshToken;
 
     @OneToMany(mappedBy = "member")
+    private List<FiPointHistory> fiPointHistories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<FiScoreHistory> fiScoreHistories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
     private List<MemberChallenge> memberChallenges = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<Payback> payBacks = new ArrayList<>();
+
+    public void updateTargetReceiptFiPoint(Integer targetReceiptFiPoint ){
+        this.targetReceiptfiPoint = targetReceiptFiPoint;
+    }
 }
