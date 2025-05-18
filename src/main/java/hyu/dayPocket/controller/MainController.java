@@ -5,6 +5,7 @@ import hyu.dayPocket.config.CustomUserDetails;
 import hyu.dayPocket.domain.Member;
 import hyu.dayPocket.dto.AssetDto;
 import hyu.dayPocket.dto.HomeDto;
+import hyu.dayPocket.dto.InfoDto;
 import hyu.dayPocket.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,13 @@ public class MainController {
         Member member = userDetails.getMember();
         AssetDto assetDto = memberService.getAssetDto(member);
         return new ResponseEntity<>(assetDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/dayPocket/main/info")
+    public ResponseEntity<InfoDto> getInfo(@AuthenticationPrincipal CustomUserDetails userDetails){
+        Member member = userDetails.getMember();
+        InfoDto infoDto = memberService.getInfoDto(member);
+        return new ResponseEntity<>(infoDto, HttpStatus.OK);
     }
 
 }

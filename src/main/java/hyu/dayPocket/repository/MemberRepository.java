@@ -1,7 +1,6 @@
 package hyu.dayPocket.repository;
 
 import hyu.dayPocket.domain.Member;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,26 +13,20 @@ import java.util.Optional;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    @Query("select f.member from FiScoreHistory f where f.date = :today order by  f.fiScore desc ")
-    List<Member> findDayMaxFiScoreMember(@Param("today") LocalDate today, Pageable pageable);
+    @Query("select m from Member m order by m.fiScore desc")
+    List<Member> findDayMaxFiScoreMember();
 
-    @Query("select f.member from FiPointHistory f where f.date between :startDate and :endDate  order by f.fiPoint desc")
-    List<Member> findMonthMaxFiPointMember(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, Pageable pageable);
+    @Query("select avg(m.fiScore) from Member m ")
+    Double findAvgFiScore();
 
-    @Query("select f.member.id, sum(f.fiScore) from FiScoreHistory f WHERE f.date = :today GROUP BY f.member.id")
-    List<Object[]> findDayFiPointGroupByMember(@Param ("today") LocalDate today);
-
-    @Query("select f.member.id, sum(f.fiPoint)  from FiPointHistory f where  f.date between :startDate and :endDate GROUP BY f.member.id")
-    List<Object[]> findMonthFiScoreGroupByMember(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
-
-    @Query("select sum(f.fiScore) from FiScoreHistory f where f.date = :today and f.member = :member")
-    Long sumTodayFiScoreByMember(@Param("today") LocalDate today, @Param("member") Member member);
+    @Query("select f.member, sum(f.fiPoint)  from FiPointHistory f where  f.date between :startDate and :endDate GROUP BY f.member order by  sum(f.fiPoint) desc")
+    List<Object[]> findMonthFiPointSumGroupByMember(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     @Query("select sum(f.fiPoint) from FiPointHistory f where f.date between :startDate and :endDate and f.member = :member")
-    Integer sumTodayFiPointByMember(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, @Param("member") Member member);
+    Integer sumMonthFiPointByMember(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, @Param("member") Member member);
 
     @Query("select sum(f.fiPoint) from FiPointHistory f where f.member = :member")
-    Long sumFiPointByMember(@Param("member") Member member);
+    Long accumulateFiPointByMember(@Param("member") Member member);
 
 
 
