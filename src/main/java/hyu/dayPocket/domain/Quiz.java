@@ -14,10 +14,8 @@ public class Quiz {
 
     private Integer correctAnswerCount;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberChallenge_id")
     private MemberChallenge memberChallenge;
-
-
 }
 

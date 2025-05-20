@@ -25,6 +25,7 @@ public class Member {
 
     private Long fiScore;
 
+    @Setter
     private Integer fiPoint;
 
     private Long asset;
@@ -45,7 +46,17 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Payback> payBacks = new ArrayList<>();
 
+
     public void updateTargetReceiptFiPoint(Integer targetReceiptFiPoint ){
         this.targetReceiptfiPoint = targetReceiptFiPoint;
+    }
+    @OneToMany(mappedBy = "owner")
+    private List<BankAccount> bankAccounts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<WithDrawalHistory> withDrawalHistories = new ArrayList<>();
+
+    public void usePoint(Integer usedPoint) {
+        this.fiPoint -= usedPoint;
     }
 }
