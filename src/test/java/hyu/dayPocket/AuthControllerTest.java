@@ -11,10 +11,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+
+import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -34,9 +41,10 @@ public class AuthControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
     private Member testMember;
-
-
 
     @BeforeEach
     void setUp() {
@@ -64,5 +72,18 @@ public class AuthControllerTest {
         assertThat(member.getName()).isEqualTo("myname");
     }
 
+    @Test
+    void testVerifyAuthCodeApi() throws Exception {
+        String phoneNumber = "010-1111-1111";
+        String verificationCode = "1111";
+        redisTemplate.opsForValue().set(phoneNumber, verificationCode, Duration.ofMinutes(5));
 
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("authCode", verificationCode);
+        params.add("phoneNumber", phoneNumber);
+
+        mockMvc.perform(get("/auth/auth-code")
+                        .params(params))
+                .andExpect(status().isOk());
+    }
 }
