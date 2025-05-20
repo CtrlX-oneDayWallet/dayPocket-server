@@ -2,6 +2,7 @@ package hyu.dayPocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hyu.dayPocket.domain.Member;
+import hyu.dayPocket.dto.LoginData;
 import hyu.dayPocket.dto.SignupData;
 import hyu.dayPocket.repository.MemberRepository;
 import hyu.dayPocket.utils.JwtTokenUtils;
@@ -18,6 +19,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.security.SecureRandom;
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,19 +48,6 @@ public class AuthControllerTest {
 
     private Member testMember;
 
-    @BeforeEach
-    void setUp() {
-        testMember = Member.builder().
-                name("test")
-                .password("test")
-                .asset(12334L)
-                .fiScore(1000L)
-                .fiPoint(1000)
-                .phoneNumber("010-2222-2222")
-                .build();
-
-    }
-
     @Test
     void testSignupApi() throws Exception {
         SignupData data = new SignupData("myname", "pass", "010-5585-9203");
@@ -84,6 +73,44 @@ public class AuthControllerTest {
 
         mockMvc.perform(get("/auth/auth-code")
                         .params(params))
+                .andExpect(status().isOk());
+    }
+
+    void setUp() {
+        String phoneNumber = generateCode();
+
+        testMember = Member.builder().
+                name("test")
+                .password("test")
+                .asset(12334L)
+                .fiScore(1000L)
+                .fiPoint(1000)
+                .phoneNumber(phoneNumber)
+                .build();
+
+        memberRepository.save(testMember);
+    }
+
+    private String generateCode() {
+        SecureRandom secureRandom = new SecureRandom();
+        StringBuilder authCode = new StringBuilder();
+
+        for (int i = 0; i < 6; i++) {
+            int digit = secureRandom.nextInt(10);
+            authCode.append(digit);
+        }
+
+        return authCode.toString();
+    }
+
+    @Test
+    void testLoginApi() throws Exception {
+        setUp();
+        LoginData data = new LoginData(testMember.getPhoneNumber(), testMember.getPassword());
+
+        mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(data)))
                 .andExpect(status().isOk());
     }
 }
