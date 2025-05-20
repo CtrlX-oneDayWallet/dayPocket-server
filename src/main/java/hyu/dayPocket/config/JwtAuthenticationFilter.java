@@ -50,7 +50,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String method = request.getMethod();
 
         return WHITELIST.stream().anyMatch(
-                url -> url.getPath().equals(path) && method.equals(url.getMethod())
+                url -> url.getPath().equals(path)
+                        && url.getMethod().name().equals(method)
         );
     }
 
