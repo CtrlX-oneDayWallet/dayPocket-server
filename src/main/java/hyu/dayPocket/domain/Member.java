@@ -25,6 +25,7 @@ public class Member {
 
     private Long fiScore;
 
+    @Setter
     private Integer fiPoint;
 
     private Long asset;
