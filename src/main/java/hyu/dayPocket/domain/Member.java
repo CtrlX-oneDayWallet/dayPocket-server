@@ -23,6 +23,7 @@ public class Member {
     @Column(unique = true)
     private String phoneNumber;
 
+    @Setter
     private Long fiScore;
 
     @Setter

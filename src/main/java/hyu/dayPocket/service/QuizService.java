@@ -1,13 +1,16 @@
 package hyu.dayPocket.service;
 
+import hyu.dayPocket.domain.FiPointHistory;
 import hyu.dayPocket.domain.Member;
 import hyu.dayPocket.dto.MemberChosenAnswer;
 import hyu.dayPocket.dto.QuizProvidingDto;
+import hyu.dayPocket.repository.FiPointHistoryRepository;
 import hyu.dayPocket.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,6 +20,7 @@ import java.util.stream.Collectors;
 public class QuizService {
     private final QuizRepository quizRepository;
     private final MemberService memberService;
+    private final FiPointHistoryRepository fiPointHistoryRepository;
 
     public List<QuizProvidingDto> provideQuiz() {
         Long maxId = quizRepository.findMaxId();
@@ -46,6 +50,9 @@ public class QuizService {
                 .count();
 
         member.setFiPoint(member.getFiPoint() - 50 * correctAnswerCount);
+        member.setFiScore(member.getFiScore()+ 50L * correctAnswerCount);
+        FiPointHistory fiPointHistory = FiPointHistory.fiPointHistoryFrom(member, 50 * correctAnswerCount, LocalDateTime.now());
+        fiPointHistoryRepository.save(fiPointHistory);
         return correctAnswerCount;
     }
 }

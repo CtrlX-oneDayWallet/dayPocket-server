@@ -18,4 +18,12 @@ public class FiPointHistory {
     private Integer fiPoint;
 
     private LocalDateTime date;
+
+    public static FiPointHistory fiPointHistoryFrom(Member member, Integer fiPoint, LocalDateTime date) {
+        FiPointHistory fiPointHistory = new FiPointHistory();
+        fiPointHistory.member = member;
+        fiPointHistory.fiPoint = fiPoint;
+        fiPointHistory.date = date;
+        return fiPointHistory;
+    }
 }
