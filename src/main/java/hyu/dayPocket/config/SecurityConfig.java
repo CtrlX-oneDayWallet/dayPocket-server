@@ -32,7 +32,8 @@ public class SecurityConfig  {
             new RestfulUrl(HttpMethod.POST, "/auth/phoneNumber"),
             new RestfulUrl(HttpMethod.POST, "/auth/signup"),
             new RestfulUrl(HttpMethod.GET, "/auth/auth-code"),
-            new RestfulUrl(HttpMethod.GET, "/error")
+            new RestfulUrl(HttpMethod.GET, "/error"),
+            new RestfulUrl(HttpMethod.GET, "/")
     );
 
     @Bean
