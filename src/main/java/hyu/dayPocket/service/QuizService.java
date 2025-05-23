@@ -4,6 +4,8 @@ import hyu.dayPocket.domain.FiPointHistory;
 import hyu.dayPocket.domain.Member;
 import hyu.dayPocket.dto.MemberChosenAnswer;
 import hyu.dayPocket.dto.QuizProvidingDto;
+import hyu.dayPocket.enums.ChallengeType;
+import hyu.dayPocket.enums.PointPaymentState;
 import hyu.dayPocket.repository.FiPointHistoryRepository;
 import hyu.dayPocket.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +53,7 @@ public class QuizService {
 
         member.setFiPoint(member.getFiPoint() - 50 * correctAnswerCount);
         member.setFiScore(member.getFiScore()+ 50L * correctAnswerCount);
-        FiPointHistory fiPointHistory = FiPointHistory.fiPointHistoryFrom(member, 50 * correctAnswerCount, LocalDateTime.now());
+        FiPointHistory fiPointHistory = FiPointHistory.fiPointHistoryFrom(member, 50 * correctAnswerCount, PointPaymentState.APPROVED,  ChallengeType.QUIZ ,LocalDateTime.now());
         fiPointHistoryRepository.save(fiPointHistory);
         return correctAnswerCount;
     }
