@@ -13,6 +13,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -28,6 +30,12 @@ public class SecurityConfig  {
     public static final List<RestfulUrl> WHITELIST = List.of(
             new RestfulUrl(HttpMethod.GET, "/admin/fiPointForm"),
             new RestfulUrl(HttpMethod.POST, "/admin/fiPointForm")
+            new RestfulUrl(HttpMethod.POST, "/auth/login"),
+            new RestfulUrl(HttpMethod.POST, "/auth/phoneNumber"),
+            new RestfulUrl(HttpMethod.POST, "/auth/signup"),
+            new RestfulUrl(HttpMethod.GET, "/auth/auth-code"),
+            new RestfulUrl(HttpMethod.GET, "/error"),
+            new RestfulUrl(HttpMethod.GET, "/")
     );
 
     @Bean
@@ -35,10 +43,12 @@ public class SecurityConfig  {
         http.csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(WHITELIST).permitAll()
-                        .anyRequest().authenticated()
-                )
+                .authorizeHttpRequests(requests -> {
+                    for (RestfulUrl url : WHITELIST) {
+                        requests.requestMatchers(url.getMethod(), url.getPath()).permitAll();
+                    }
+                    requests.anyRequest().authenticated();
+                })
                 .cors(cors -> cors
                         .configurationSource(CorsConfig.corsConfigurationSource())
                 )
@@ -48,5 +58,7 @@ public class SecurityConfig  {
 
         return http.build();
     }
+
+
 
 }

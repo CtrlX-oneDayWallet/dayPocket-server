@@ -9,6 +9,7 @@ import hyu.dayPocket.utils.JwtTokenUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,15 +23,17 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final JwtTokenUtils jwtTokenUtils;
     private final Integer maxAge;
+    private final PasswordEncoder passwordEncoder;
 
     public MemberService(
             MemberRepository memberRepository,
             JwtTokenUtils jwtTokenUtils,
-            @Value("${jwt.refresh-token-expire-time}") Integer maxAge
-    ) {
+            @Value("${jwt.refresh-token-expire-time}") Integer maxAge,
+            PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.jwtTokenUtils = jwtTokenUtils;
         this.maxAge = maxAge;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public DayMaxFiScoreDto getDayMaxFiScoreDto(){
@@ -118,7 +121,7 @@ public class MemberService {
                 Member.builder()
                         .name(name)
                         .phoneNumber(phoneNumber)
-                        .password(password)
+                        .password(passwordEncoder.encode(password))
                         .fiScore(50L)
                         .build()
         );
