@@ -62,10 +62,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (bearer != null && bearer.startsWith("Bearer ")) {
             return bearer.substring(7);
         }
-        log.info("uri", request.getRequestURI());
-        log.info("method", request.getMethod());
+        log.info("uri " +  request.getRequestURI());
+        log.info("method " + request.getMethod());
         log.info("IP: " + request.getRemoteAddr());
-        log.info("User-Agent" + request.getHeader("User-Agent"));
+        log.info("User-Agent " + request.getHeader("User-Agent"));
         throw new JwtTokenException("토큰이 존재하지 않거나, 잘못된 형식입니다.");
     }
 }
