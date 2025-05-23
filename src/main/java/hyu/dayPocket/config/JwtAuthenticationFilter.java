@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailService userDetailService;
     private final JwtTokenUtils jwtTokenUtils;
@@ -60,6 +62,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (bearer != null && bearer.startsWith("Bearer ")) {
             return bearer.substring(7);
         }
+        log.info("uri", request.getRequestURI());
+        log.info("method", request.getMethod());
+        log.info("IP: " + request.getRemoteAddr());
+        log.info("User-Agent" + request.getHeader("User-Agent"));
         throw new JwtTokenException("토큰이 존재하지 않거나, 잘못된 형식입니다.");
     }
 }
