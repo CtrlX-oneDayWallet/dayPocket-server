@@ -15,31 +15,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class FiPointController {
 
     private final FiPointService fiPointService;
     private final MemberRepository memberRepository;
 
-    @GetMapping
+    @GetMapping("/admin/page")
     public String showAdminForm(Model model){
         model.addAttribute("members", memberRepository.findAll() );
-        return "admin/fiPointForm";
+        return "admin/page";
     }
 
-    @PostMapping("/admin/fiPointForm")
+    @PostMapping("/admin/page")
     public String updateFiPoint(@ModelAttribute PhotoRequestDto photoRequestDto){
         fiPointService.updateFiPoint(photoRequestDto);
-        return "redirect:/admin/fiPointForm";
+        return "redirect:/admin/page";
     }
-
-    @GetMapping("/dayPocket/challenge/status")
-    public ResponseEntity<StatusDto> getLatestStatus ( @AuthenticationPrincipal CustomUserDetails userDetails,
-                                                       @RequestParam ChallengeType type){
-        StatusDto status = fiPointService.statusDto(userDetails.getMember(), type);
-        return ResponseEntity.ok(status);
-    }
-
 
 }
