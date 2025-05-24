@@ -1,17 +1,16 @@
 package hyu.dayPocket.service;
 
-import hyu.dayPocket.exceptions.SendingSmsFailException;
+
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import net.nurigo.sdk.NurigoApp;
+import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
+import net.nurigo.sdk.message.response.SingleMessageSentResponse;
+import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 import java.security.SecureRandom;
 import java.time.Duration;
@@ -21,39 +20,49 @@ import java.time.Duration;
 public class SmsService {
     private final StringRedisTemplate redisTemplate;
 
-    private final RestTemplate restTemplate;
+    private DefaultMessageService messageService;
 
-    @Value("${aligo.api-key}")
-    private String aligoApiKey;
+    @Value("${coolsms.sender}")
+    private String senderNumber;
 
-    @Value("${aligo.user-id}")
-    private String aligoUserId;
+    @Value("${coolsms.api.key}")
+    private String apiKey;
 
-    @Value("${aligo.sender-phone}")
-    private String senderPhone;
+    @Value("${coolsms.api.secret}")
+    private String apiSecret;
 
-    public void sendVerificationCode(String phoneNumber) {
+
+    @PostConstruct
+    public void init(){
+        this.messageService = NurigoApp.INSTANCE.initialize(apiKey,
+                apiSecret,
+                "https://api.coolsms.co.kr");
+    }
+
+    public boolean sendVerificationCode(String phoneNumber) {
         String verificationCode = generateCode();
 
         redisTemplate.opsForValue().set(phoneNumber, verificationCode, Duration.ofMinutes(5));
 
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("key", aligoApiKey);
-        params.add("user_id", aligoUserId);
-        params.add("sender", senderPhone);
-        params.add("receiver", phoneNumber);
-        params.add("msg", verificationCode + "는 인증번호입니다.");
-        params.add("testmode_yn", "Y");
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        HttpEntity<MultiValueMap<String, String>> request =
-                new HttpEntity<>(params, headers);
-
-        validateSmsRequest(restTemplate.postForEntity("https://apis.aligo.in/send/", request, String.class));
+        return sendSms(phoneNumber, "하루 지갑의 인증 번호는 [" + verificationCode + "] 입니다.");
     }
+
+    public boolean sendSms(String to, String text) {
+        Message message = new Message();
+        message.setFrom(senderNumber);
+        message.setTo(to);
+        message.setText(text);
+
+        SingleMessageSentResponse response = messageService.sendOne(new SingleMessageSendingRequest(message));
+
+        if (response.getStatusCode().equals("2000")) {
+            return true;
+        }
+
+        return false;
+    }
+
+
 
     private String generateCode() {
         SecureRandom secureRandom = new SecureRandom();
@@ -67,9 +76,9 @@ public class SmsService {
         return authCode.toString();
     }
 
-    private void validateSmsRequest(ResponseEntity<String> response) {
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new SendingSmsFailException("요청이 올바르지 않았습니다");
-        }
-    }
+//    private void validateSmsRequest(ResponseEntity<String> response) {
+//        if (!response.getStatusCode().is2xxSuccessful()) {
+//            throw new SendingSmsFailException("요청이 올바르지 않았습니다");
+//        }
+//    }
 }

@@ -29,7 +29,7 @@ public class SecurityConfig  {
 
     public static final List<RestfulUrl> WHITELIST = List.of(
             new RestfulUrl(HttpMethod.GET, "/admin/fiPointForm"),
-            new RestfulUrl(HttpMethod.POST, "/admin/fiPointForm")
+            new RestfulUrl(HttpMethod.POST, "/admin/fiPointForm"),
             new RestfulUrl(HttpMethod.POST, "/auth/login"),
             new RestfulUrl(HttpMethod.POST, "/auth/phoneNumber"),
             new RestfulUrl(HttpMethod.POST, "/auth/signup"),
