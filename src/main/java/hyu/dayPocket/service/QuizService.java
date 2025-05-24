@@ -46,13 +46,13 @@ public class QuizService {
         Map<Long, Boolean> correctAnswerMap = quizRepository.findAllAnswerByInIdSet(ids).stream()
                 .collect(Collectors.toMap(MemberChosenAnswer::getId, MemberChosenAnswer::getAnswer));
 
-        int correctAnswerCount = (int )memberChosenAnswers.stream()
+        int correctAnswerCount = (int) memberChosenAnswers.stream()
                 .filter(answer -> correctAnswerMap.containsKey(answer.getId()) &&
                         correctAnswerMap.get(answer.getId()).equals(answer.getAnswer()))
                 .count();
 
-        member.setFiPoint(member.getFiPoint() - 50 * correctAnswerCount);
-        member.setFiScore(member.getFiScore()+ 50L * correctAnswerCount);
+        member.setFiPoint(member.getFiPoint() + 50 * correctAnswerCount);
+        member.setFiScore(member.getFiScore() + 50L * correctAnswerCount);
         FiPointHistory fiPointHistory = FiPointHistory.fiPointHistoryFrom(member, 50 * correctAnswerCount, PointPaymentState.APPROVED,  ChallengeType.QUIZ ,LocalDateTime.now());
         fiPointHistoryRepository.save(fiPointHistory);
         return correctAnswerCount;
