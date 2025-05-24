@@ -25,13 +25,8 @@
 <form th:action="@{/admin/fiPointForm}" method="post">
     <!-- 회원 선택 -->
     <div class="form-group">
-        <label>회원 선택:</label>
-        <select name="memberId">
-            <option th:each="member : ${members}"
-                    th:value="${member.id}"
-                    th:text="${member.name + ' (' + member.phoneNumber + ')'}">
-            </option>
-        </select>
+        <label>회원 ID:</label>
+        <input type="number" name="memberId" placeholder="회원 ID 입력">
     </div>
 
     <!-- 인증 유형 선택 -->

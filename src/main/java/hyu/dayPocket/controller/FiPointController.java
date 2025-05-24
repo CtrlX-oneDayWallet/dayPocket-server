@@ -23,8 +23,7 @@ public class FiPointController {
     private final MemberRepository memberRepository;
 
     @GetMapping("/admin/page")
-    public String showAdminForm(Model model){
-        model.addAttribute("members", memberRepository.findAll() );
+    public String showAdminForm(){
         return "admin/page";
     }
 
