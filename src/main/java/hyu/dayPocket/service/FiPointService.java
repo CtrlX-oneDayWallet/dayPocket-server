@@ -4,6 +4,7 @@ import hyu.dayPocket.domain.FiPointHistory;
 import hyu.dayPocket.domain.Member;
 import hyu.dayPocket.domain.Receipt;
 import hyu.dayPocket.domain.Trade;
+import hyu.dayPocket.dto.ClientChallengeType;
 import hyu.dayPocket.dto.PhotoRequestDto;
 import hyu.dayPocket.dto.StatusDto;
 import hyu.dayPocket.enums.ChallengeType;
@@ -53,6 +54,25 @@ public class FiPointService {
             }
         }else{
             fiPointHistory.updateStateRejected();
+        }
+    }
+
+    public void addFiPointHistory(ClientChallengeType challengeType, Member member) {
+        ChallengeType challengeEnum = convertToChallengeType(challengeType.getChallenge());
+
+        fiPointHistoryRepository.save(FiPointHistory.builder()
+                .member(member)
+                .challenge(challengeEnum)
+                .state(PointPaymentState.WAITING)
+                .date(LocalDateTime.now())
+                .build());
+    }
+
+    public ChallengeType convertToChallengeType(String value) {
+        try {
+            return ChallengeType.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new IllegalArgumentException("Invalid challenge type: " + value);
         }
     }
 

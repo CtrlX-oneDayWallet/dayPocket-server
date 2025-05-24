@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BankAccountService {
     private final BankAccountRepository bankAccountRepository;
     private final WithdrawalHistoryRepository withdrawalHistoryRepository;
+    private final MemberService memberService;
 
     @Transactional
     public void saveAccount(Member member, String bank, Integer password, String accountNumber) {
@@ -32,11 +33,14 @@ public class BankAccountService {
     }
 
     @Transactional
-    public void withdraw(Member member, Integer usedPoint) {
+    public void withdraw(Member userDetailsMember, Integer usedPoint) {
+        Member member = memberService.getMemberById(userDetailsMember.getId());
+
         validateIfMemberHasEnoughPoint(member, usedPoint);
         log.info("성함: " +  member.getName()
                 + " 핸드폰 번호" + member.getPhoneNumber()
                 + " 이 유저가 " + usedPoint + "포인트를 사용함");
+
 
         member.usePoint(usedPoint);
         withdrawalHistoryRepository.save(
