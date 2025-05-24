@@ -25,7 +25,7 @@ public class QuizController {
     }
 
     @PostMapping("/submit/quiz")
-    public int checkClientAnswer(@RequestBody List<MemberChosenAnswer> dto, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public boolean[] checkClientAnswer(@RequestBody List<MemberChosenAnswer> dto, @AuthenticationPrincipal CustomUserDetails userDetails) {
         return quizService.checkIfCorrectAnswers(dto, userDetails.getMember());
     }
 }
