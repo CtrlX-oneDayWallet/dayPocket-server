@@ -122,6 +122,7 @@ public class MemberService {
                         .name(name)
                         .phoneNumber(phoneNumber)
                         .password(passwordEncoder.encode(password))
+                        .fiScore(50L)
                         .build()
         );
     }

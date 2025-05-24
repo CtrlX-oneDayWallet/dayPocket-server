@@ -10,15 +10,23 @@ public class Receipt {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long receiptId;
 
-    private String business;
+    private String location;
 
-    private Integer spentMoney;
+    private String receiptItem;
 
-    private LocalDateTime spentTime;
+    private Integer price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberChallenge_id")
     private MemberChallenge memberChallenge;
+
+    public static Receipt receiptFrom(String location, String receiptItem, Integer price){
+        Receipt receipt = new Receipt();
+        receipt.location = location;
+        receipt.receiptItem = receiptItem;
+        receipt.price = price;
+        return receipt;
+    }
 
 
 }
