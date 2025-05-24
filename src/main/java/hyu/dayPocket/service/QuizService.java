@@ -38,7 +38,7 @@ public class QuizService {
     }
 
     @Transactional
-    public int checkIfCorrectAnswers(List<MemberChosenAnswer> memberChosenAnswers, Member member) {
+    public boolean[] checkIfCorrectAnswers(List<MemberChosenAnswer> memberChosenAnswers, Member member) {
         Set<Long> ids = memberChosenAnswers.stream()
                 .map(MemberChosenAnswer::getId)
                 .collect(Collectors.toSet());
@@ -46,15 +46,23 @@ public class QuizService {
         Map<Long, Boolean> correctAnswerMap = quizRepository.findAllAnswerByInIdSet(ids).stream()
                 .collect(Collectors.toMap(MemberChosenAnswer::getId, MemberChosenAnswer::getAnswer));
 
-        int correctAnswerCount = (int) memberChosenAnswers.stream()
-                .filter(answer -> correctAnswerMap.containsKey(answer.getId()) &&
-                        correctAnswerMap.get(answer.getId()).equals(answer.getAnswer()))
-                .count();
+        int cnt = 0;
+        int correctAnswerCnt = 0;
+        boolean[] quizAnswers = new boolean[5];
 
-        member.setFiPoint(member.getFiPoint() + 50 * correctAnswerCount);
-        member.setFiScore(member.getFiScore() + 50L * correctAnswerCount);
-        FiPointHistory fiPointHistory = FiPointHistory.fiPointHistoryFrom(member, 50 * correctAnswerCount, PointPaymentState.APPROVED,  ChallengeType.QUIZ ,LocalDateTime.now());
+        for (MemberChosenAnswer memberChosenAnswer : memberChosenAnswers) {
+            if (correctAnswerMap.containsKey(memberChosenAnswer.getId()) &&
+                    correctAnswerMap.get(memberChosenAnswer.getId()).equals(memberChosenAnswer.getAnswer())) {
+                quizAnswers[cnt] = true;
+                correctAnswerCnt++;
+            }
+            cnt++;
+        }
+
+        member.setFiPoint(member.getFiPoint() + 50 * correctAnswerCnt);
+        member.setFiScore(member.getFiScore() + 50L * correctAnswerCnt);
+        FiPointHistory fiPointHistory = FiPointHistory.fiPointHistoryFrom(member, 50 * correctAnswerCnt, PointPaymentState.APPROVED,  ChallengeType.QUIZ ,LocalDateTime.now());
         fiPointHistoryRepository.save(fiPointHistory);
-        return correctAnswerCount;
+        return quizAnswers;
     }
 }
