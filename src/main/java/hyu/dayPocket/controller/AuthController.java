@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,9 +30,11 @@ public class AuthController {
     }
 
     @PostMapping("/phoneNumber")
-    public String certifyPhoneNumber(@RequestParam String phoneNumber) {
-        smsService.sendVerificationCode(phoneNumber);
-        return "Phone number is verified!";
+    public ResponseEntity<String> certifyPhoneNumber(@RequestParam String phoneNumber) {
+        if (smsService.sendVerificationCode(phoneNumber)) {
+            return ResponseEntity.ok("Verification Code Sent");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Verification Code Not Sent");
     }
 
     @GetMapping("/auth-code")
