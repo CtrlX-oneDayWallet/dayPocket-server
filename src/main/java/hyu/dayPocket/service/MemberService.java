@@ -41,7 +41,7 @@ public class MemberService {
         Double avgFiScore = memberRepository.findAvgFiScore();
         String maxFiScoreName = dayMaxFiScore.get(0).getName();
         Long maxFiScore = dayMaxFiScore.get(0).getFiScore();
-        DayMaxFiScoreDto dayMaxFiScoreDto = DayMaxFiScoreDto.maxFiScoreFrom(avgFiScore, maxFiScoreName, maxFiScore);
+        DayMaxFiScoreDto dayMaxFiScoreDto = DayMaxFiScoreDto.maxFiScoreFrom(avgFiScore, getMemberNamePrivate(maxFiScoreName), maxFiScore);
         return dayMaxFiScoreDto;
     }
 
@@ -55,7 +55,7 @@ public class MemberService {
         Object[] topMember = monthMaxFiPointSumOrderByMember.get(0);
         Member member = (Member)topMember[0];
         Integer memberFiPoint = (Integer) topMember[1];
-        MonthMaxFiPointDto monthMaxFiPointDto = MonthMaxFiPointDto.maxFiPointFrom(monthAvgFiPoint, member.getName(), memberFiPoint);
+        MonthMaxFiPointDto monthMaxFiPointDto = MonthMaxFiPointDto.maxFiPointFrom(monthAvgFiPoint, getMemberNamePrivate(member.getName()), memberFiPoint);
         return monthMaxFiPointDto;
     }
 
@@ -147,6 +147,17 @@ public class MemberService {
             totalSum += sum;
         }
         return (double) totalSum/ result.size();
+    }
+
+    public String getMemberNamePrivate(String name){
+        int length = name.length();
+        int middle = length / 2;
+
+        if (length % 2 == 0) {
+            return name.substring(0, middle - 1) + "*" + name.substring(middle);
+        } else {
+            return name.substring(0, middle) + "*" + name.substring(middle + 1);
+        }
     }
 
 
