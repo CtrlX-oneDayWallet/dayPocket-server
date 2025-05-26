@@ -43,6 +43,7 @@ public class FiPointService {
                 member.setFiPoint(member.getFiPoint()+100);
                 receiptRepository.save(receipt);
                 member.setFiScore(member.getFiScore()+1);
+                member.updateReceiptFiPoint(100);
                 fiPointHistory.updateFiPontHistory(100, LocalDateTime.now());
             }else if(fiPointHistory.getChallenge() == ChallengeType.TRADE){
                 Trade trade = Trade.tradeFrom(photoRequestDto.getAmount(), photoRequestDto.getItemName());
