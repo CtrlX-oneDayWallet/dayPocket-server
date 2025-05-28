@@ -103,7 +103,7 @@ public class MemberService {
     @Transactional
     public void doLogin(String phoneNumber, String password, HttpServletResponse response) {
         Member member = getMemberByPhoneNumber(phoneNumber);
-        if (member.getPassword().equals(password)) {
+        if (passwordEncoder.matches(password, member.getPassword())) {
             String token = jwtTokenUtils.generateAccessToken(member);
             String refreshToken = jwtTokenUtils.generateRefreshToken(member);
 
