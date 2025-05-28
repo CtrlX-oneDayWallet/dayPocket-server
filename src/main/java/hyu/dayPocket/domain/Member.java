@@ -51,6 +51,10 @@ public class Member {
     public void updateTargetReceiptFiPoint(Integer targetReceiptFiPoint ){
         this.targetReceiptfiPoint = targetReceiptFiPoint;
     }
+
+    public void updateReceiptFiPoint(Integer receiptFiPoint ){
+        this.receiptfiPoint += receiptFiPoint;
+    }
     @OneToMany(mappedBy = "owner")
     private List<BankAccount> bankAccounts = new ArrayList<>();
 
