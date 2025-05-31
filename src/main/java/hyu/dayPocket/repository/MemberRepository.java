@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,10 +21,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Double findAvgFiScore();
 
     @Query("select f.member, sum(f.fiPoint)  from FiPointHistory f where  f.date between :startDate and :endDate GROUP BY f.member order by  sum(f.fiPoint) desc")
-    List<Object[]> findMonthFiPointSumGroupByMember(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    List<Object[]> findMonthFiPointSumGroupByMember(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     @Query("select sum(f.fiPoint) from FiPointHistory f where f.date between :startDate and :endDate and f.member = :member")
-    Integer sumMonthFiPointByMember(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, @Param("member") Member member);
+    Integer sumMonthFiPointByMember(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("member") Member member);
 
     @Query("select sum(f.fiPoint) from FiPointHistory f where f.member = :member")
     Long accumulateFiPointByMember(@Param("member") Member member);

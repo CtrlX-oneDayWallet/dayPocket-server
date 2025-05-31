@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -48,8 +49,8 @@ public class MemberService {
     public MonthMaxFiPointDto getMonthMaxFiPointDto(){
         LocalDate now = LocalDate.now();
         YearMonth currentMonth = YearMonth.from(now);
-        LocalDate startOfMonth = currentMonth.atDay(1);
-        LocalDate endOfMonth = currentMonth.atEndOfMonth();
+        LocalDateTime startOfMonth = currentMonth.atDay(1).atStartOfDay();;
+        LocalDateTime endOfMonth = currentMonth.atEndOfMonth().atTime(23, 59, 59);
         List<Object[]> monthMaxFiPointSumOrderByMember = memberRepository.findMonthFiPointSumGroupByMember(startOfMonth, endOfMonth);
         Double monthAvgFiPoint = getMonthAvgFiPoint(monthMaxFiPointSumOrderByMember);
         Object[] topMember = monthMaxFiPointSumOrderByMember.get(0);
@@ -73,8 +74,8 @@ public class MemberService {
     public AssetDto getAssetDto(Member member) {
         LocalDate now = LocalDate.now();
         YearMonth currentMonth = YearMonth.from(now);
-        LocalDate startOfMonth = currentMonth.atDay(1);
-        LocalDate endOfMonth = currentMonth.atEndOfMonth();
+        LocalDateTime startOfMonth = currentMonth.atDay(1).atStartOfDay();;
+        LocalDateTime endOfMonth = currentMonth.atEndOfMonth().atTime(23, 59, 59);
         Long asset = memberRepository.accumulateFiPointByMember(member);
         Integer targetReceiptFiPoint = member.getTargetReceiptfiPoint();
         Integer receiptFiPoint = member.getReceiptfiPoint();
