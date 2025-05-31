@@ -24,7 +24,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Object[]> findMonthFiPointSumGroupByMember(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     @Query("select sum(f.fiPoint) from FiPointHistory f where f.date between :startDate and :endDate and f.member = :member")
-    Integer sumMonthFiPointByMember(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("member") Member member);
+    Long sumMonthFiPointByMember(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("member") Member member);
 
     @Query("select sum(f.fiPoint) from FiPointHistory f where f.member = :member")
     Long accumulateFiPointByMember(@Param("member") Member member);
