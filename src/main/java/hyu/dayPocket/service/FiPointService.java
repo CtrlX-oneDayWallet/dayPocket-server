@@ -58,8 +58,8 @@ public class FiPointService {
         }
     }
 
-    public void addFiPointHistory(ClientChallengeType challengeType, Member member) {
-        ChallengeType challengeEnum = convertToChallengeType(challengeType.getChallenge());
+    public void addFiPointHistory(String challenge, Member member) {
+        ChallengeType challengeEnum = convertToChallengeType(challenge);
 
         fiPointHistoryRepository.save(FiPointHistory.builder()
                 .member(member)
