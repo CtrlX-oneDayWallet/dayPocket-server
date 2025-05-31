@@ -24,10 +24,10 @@ public class FileUploadController {
 
     @PostMapping("/upload")
     public String upload(@RequestPart("file") MultipartFile file,
-                         @RequestPart("challenge") ClientChallengeType challengeType,
+                         @RequestPart("challenge") String challenge,
                          @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
         azureBlobService.uploadFile(file);
-        fiPointService.addFiPointHistory(challengeType, userDetails.getMember());
+        fiPointService.addFiPointHistory(challenge, userDetails.getMember());
         return "Upload successful";
     }
 }
