@@ -13,10 +13,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly=true)
@@ -39,10 +41,15 @@ public class MemberService {
 
     public DayMaxFiScoreDto getDayMaxFiScoreDto(){
         List<Member> dayMaxFiScore = memberRepository.findDayMaxFiScoreMember();
-        Double avgFiScore = memberRepository.findAvgFiScore();
+        Double avg = memberRepository.findAvgFiScore();
+        Double avgFiScore = Optional.ofNullable(avg).orElse(0.0);
+
+        if(dayMaxFiScore.isEmpty()){
+            return  DayMaxFiScoreDto.maxFiScoreFrom(0L, "*", avgFiScore);
+        }
         String maxFiScoreName = dayMaxFiScore.get(0).getName();
         Long maxFiScore = dayMaxFiScore.get(0).getFiScore();
-        DayMaxFiScoreDto dayMaxFiScoreDto = DayMaxFiScoreDto.maxFiScoreFrom(avgFiScore, getMemberNamePrivate(maxFiScoreName), maxFiScore);
+        DayMaxFiScoreDto dayMaxFiScoreDto = DayMaxFiScoreDto.maxFiScoreFrom(maxFiScore, getMemberNamePrivate(maxFiScoreName), avgFiScore);
         return dayMaxFiScoreDto;
     }
 
@@ -53,9 +60,15 @@ public class MemberService {
         LocalDateTime endOfMonth = currentMonth.atEndOfMonth().atTime(23, 59, 59);
         List<Object[]> monthMaxFiPointSumOrderByMember = memberRepository.findMonthFiPointSumGroupByMember(startOfMonth, endOfMonth);
         Double monthAvgFiPoint = getMonthAvgFiPoint(monthMaxFiPointSumOrderByMember);
+
+        if(monthMaxFiPointSumOrderByMember.isEmpty()){
+            return MonthMaxFiPointDto.maxFiPointFrom(monthAvgFiPoint, "*" ,0);
+        }
+
         Object[] topMember = monthMaxFiPointSumOrderByMember.get(0);
         Member member = (Member)topMember[0];
-        Integer memberFiPoint = (Integer) topMember[1];
+        Long memberFiPointLong = (Long) topMember[1];
+        Integer memberFiPoint = (memberFiPointLong != null) ? memberFiPointLong.intValue() : 0;
         MonthMaxFiPointDto monthMaxFiPointDto = MonthMaxFiPointDto.maxFiPointFrom(monthAvgFiPoint, getMemberNamePrivate(member.getName()), memberFiPoint);
         return monthMaxFiPointDto;
     }
@@ -74,16 +87,22 @@ public class MemberService {
     public AssetDto getAssetDto(Member member) {
         LocalDate now = LocalDate.now();
         YearMonth currentMonth = YearMonth.from(now);
-        LocalDateTime startOfMonth = currentMonth.atDay(1).atStartOfDay();;
+        LocalDateTime startOfMonth = currentMonth.atDay(1).atStartOfDay();
         LocalDateTime endOfMonth = currentMonth.atEndOfMonth().atTime(23, 59, 59);
-        Long asset = memberRepository.accumulateFiPointByMember(member);
+        Long assetLong = memberRepository.accumulateFiPointByMember(member);
+        Long asset = assetLong != null ? assetLong : 0;
         Integer targetReceiptFiPoint = member.getTargetReceiptfiPoint();
         Integer receiptFiPoint = member.getReceiptfiPoint();
-        Double processPoint  = ((double) receiptFiPoint / (double) targetReceiptFiPoint  * 100);
-        Integer leftPoint = targetReceiptFiPoint - receiptFiPoint;
-        Integer fiPoint = memberRepository.sumMonthFiPointByMember(startOfMonth, endOfMonth, member);
-        AssetDto assetDto = AssetDto.assetFrom(asset, targetReceiptFiPoint, receiptFiPoint, processPoint, leftPoint, fiPoint);
-        return assetDto;
+        Long fiPointLong = memberRepository.sumMonthFiPointByMember(startOfMonth, endOfMonth, member);
+        Integer fiPoint = fiPointLong != null ? fiPointLong.intValue() : 0;
+        double processPoint = ((double) receiptFiPoint / (double) targetReceiptFiPoint) * 100;
+        if(targetReceiptFiPoint ==0){
+            return AssetDto.assetFrom(asset, targetReceiptFiPoint, receiptFiPoint, 0, 0, fiPoint);
+        }else{
+            int roundedProcessPoint = (int) Math.round(processPoint);
+            Integer leftPoint = targetReceiptFiPoint - receiptFiPoint;
+            return AssetDto.assetFrom(asset, targetReceiptFiPoint, receiptFiPoint, roundedProcessPoint, leftPoint, fiPoint);
+        }
     }
 
     public InfoDto getInfoDto(Member member){
@@ -125,6 +144,9 @@ public class MemberService {
                         .password(passwordEncoder.encode(password))
                         .fiScore(50L)
                         .fiPoint(0)
+                        .asset(0L)
+                        .targetReceiptfiPoint(0)
+                        .receiptfiPoint(0)
                         .build()
         );
     }
@@ -161,6 +183,8 @@ public class MemberService {
             return name.substring(0, middle) + "*" + name.substring(middle + 1);
         }
     }
+
+
 
 
 
