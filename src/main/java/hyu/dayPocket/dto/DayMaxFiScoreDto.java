@@ -11,7 +11,7 @@ public class DayMaxFiScoreDto {
     private String dayMaxFiScoreName;
     private Double dayAvgFiScore;
 
-    public static DayMaxFiScoreDto maxFiScoreFrom(Double dayMaxFiScore, String dayMaxFiScoreName, Long dayAvgFiScore) {
-        return new DayMaxFiScoreDto(dayAvgFiScore, dayMaxFiScoreName, dayMaxFiScore);
+    public static DayMaxFiScoreDto maxFiScoreFrom(Long dayMaxFiScore, String dayMaxFiScoreName, Double dayAvgFiScore) {
+        return new DayMaxFiScoreDto(dayMaxFiScore, dayMaxFiScoreName, dayAvgFiScore);
     }
 }

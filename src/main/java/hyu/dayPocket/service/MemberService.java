@@ -43,9 +43,13 @@ public class MemberService {
         List<Member> dayMaxFiScore = memberRepository.findDayMaxFiScoreMember();
         Double avg = memberRepository.findAvgFiScore();
         Double avgFiScore = Optional.ofNullable(avg).orElse(0.0);
+
+        if(dayMaxFiScore.isEmpty()){
+            return  DayMaxFiScoreDto.maxFiScoreFrom(0L, "*", avgFiScore);
+        }
         String maxFiScoreName = dayMaxFiScore.get(0).getName();
         Long maxFiScore = dayMaxFiScore.get(0).getFiScore();
-        DayMaxFiScoreDto dayMaxFiScoreDto = DayMaxFiScoreDto.maxFiScoreFrom(avgFiScore, getMemberNamePrivate(maxFiScoreName), maxFiScore);
+        DayMaxFiScoreDto dayMaxFiScoreDto = DayMaxFiScoreDto.maxFiScoreFrom(maxFiScore, getMemberNamePrivate(maxFiScoreName), avgFiScore);
         return dayMaxFiScoreDto;
     }
 
@@ -83,18 +87,22 @@ public class MemberService {
     public AssetDto getAssetDto(Member member) {
         LocalDate now = LocalDate.now();
         YearMonth currentMonth = YearMonth.from(now);
-        LocalDateTime startOfMonth = currentMonth.atDay(1).atStartOfDay();;
+        LocalDateTime startOfMonth = currentMonth.atDay(1).atStartOfDay();
         LocalDateTime endOfMonth = currentMonth.atEndOfMonth().atTime(23, 59, 59);
-        Long asset = memberRepository.accumulateFiPointByMember(member);
+        Long assetLong = memberRepository.accumulateFiPointByMember(member);
+        Long asset = assetLong != null ? assetLong : 0;
         Integer targetReceiptFiPoint = member.getTargetReceiptfiPoint();
         Integer receiptFiPoint = member.getReceiptfiPoint();
-        double processPoint = ((double) receiptFiPoint / (double) targetReceiptFiPoint) * 100;
-        int roundedProcessPoint = (int) Math.round(processPoint);
-        Integer leftPoint = targetReceiptFiPoint - receiptFiPoint;
         Long fiPointLong = memberRepository.sumMonthFiPointByMember(startOfMonth, endOfMonth, member);
         Integer fiPoint = fiPointLong != null ? fiPointLong.intValue() : 0;
-        AssetDto assetDto = AssetDto.assetFrom(asset, targetReceiptFiPoint, receiptFiPoint, roundedProcessPoint, leftPoint, fiPoint);
-        return assetDto;
+        double processPoint = ((double) receiptFiPoint / (double) targetReceiptFiPoint) * 100;
+        if(targetReceiptFiPoint ==0){
+            return AssetDto.assetFrom(asset, targetReceiptFiPoint, receiptFiPoint, 0, 0, fiPoint);
+        }else{
+            int roundedProcessPoint = (int) Math.round(processPoint);
+            Integer leftPoint = targetReceiptFiPoint - receiptFiPoint;
+            return AssetDto.assetFrom(asset, targetReceiptFiPoint, receiptFiPoint, roundedProcessPoint, leftPoint, fiPoint);
+        }
     }
 
     public InfoDto getInfoDto(Member member){
