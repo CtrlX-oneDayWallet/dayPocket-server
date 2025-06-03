@@ -1,5 +1,6 @@
 package hyu.dayPocket.service;
 
+import hyu.dayPocket.domain.BankAccount;
 import hyu.dayPocket.domain.Member;
 import hyu.dayPocket.dto.*;
 import hyu.dayPocket.exceptions.AuthenticationException;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly=true)
@@ -106,7 +108,15 @@ public class MemberService {
     }
 
     public InfoDto getInfoDto(Member member){
-        return InfoDto.infoFrom(member.getName(), member.getPhoneNumber());
+        List<String> accountNumbers;
+        if(member.getBankAccounts().isEmpty()){
+            accountNumbers = List.of();
+        }else{
+            accountNumbers = member.getBankAccounts().stream()
+                    .map(BankAccount::getAccountNumber)
+                    .collect(Collectors.toList());
+        }
+        return InfoDto.infoFrom(member.getName(), member.getPhoneNumber(), accountNumbers);
     }
 
     public Member getMemberById(Long id) {
