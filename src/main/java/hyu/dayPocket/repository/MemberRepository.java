@@ -20,10 +20,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("select avg(m.fiScore) from Member m ")
     Double findAvgFiScore();
 
-    @Query("select f.member, sum(f.fiPoint)  from FiPointHistory f where  f.date between :startDate and :endDate GROUP BY f.member order by  sum(f.fiPoint) desc")
+    @Query("select f.member, coalesce(sum(f.fiPoint), 0)  from FiPointHistory f where  f.date between :startDate and :endDate GROUP BY f.member order by  sum(f.fiPoint) desc")
     List<Object[]> findMonthFiPointSumGroupByMember(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
-    @Query("select sum(f.fiPoint) from FiPointHistory f where f.date between :startDate and :endDate and f.member = :member")
+    @Query("select coalesce(sum(f.fiPoint), 0) from FiPointHistory f where f.date between :startDate and :endDate and f.member = :member")
     Long sumMonthFiPointByMember(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("member") Member member);
 
     @Query("select sum(f.fiPoint) from FiPointHistory f where f.member = :member")
