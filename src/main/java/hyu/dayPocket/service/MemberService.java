@@ -107,7 +107,8 @@ public class MemberService {
         }
     }
 
-    public InfoDto getInfoDto(Member member){
+    public InfoDto getInfoDto(Member filterMember){
+        Member member = getMemberById(filterMember.getId());
         List<String> accountNumbers;
         if(member.getBankAccounts().isEmpty()){
             accountNumbers = List.of();
