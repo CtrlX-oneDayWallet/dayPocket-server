@@ -61,11 +61,11 @@ public class MemberService {
         LocalDateTime startOfMonth = currentMonth.atDay(1).atStartOfDay();;
         LocalDateTime endOfMonth = currentMonth.atEndOfMonth().atTime(23, 59, 59);
         List<Object[]> monthMaxFiPointSumOrderByMember = memberRepository.findMonthFiPointSumGroupByMember(startOfMonth, endOfMonth);
-        Double monthAvgFiPoint = getMonthAvgFiPoint(monthMaxFiPointSumOrderByMember);
 
         if(monthMaxFiPointSumOrderByMember.isEmpty()){
-            return MonthMaxFiPointDto.maxFiPointFrom(monthAvgFiPoint, "*" ,0);
+            return MonthMaxFiPointDto.maxFiPointFrom(0.0, "*" ,0);
         }
+        Double monthAvgFiPoint = getMonthAvgFiPoint(monthMaxFiPointSumOrderByMember);
 
         Object[] topMember = monthMaxFiPointSumOrderByMember.get(0);
         Member member = (Member)topMember[0];
